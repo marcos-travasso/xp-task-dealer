@@ -21,3 +21,5 @@
 go.work
 
 .ide
+
+**.env
