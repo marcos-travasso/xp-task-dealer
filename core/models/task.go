@@ -1,4 +1,4 @@
-package xp_task_dealer
+package models
 
 import "time"
 

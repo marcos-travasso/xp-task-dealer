@@ -1,13 +1,14 @@
-package xp_task_dealer
+package sqlite_store
 
 import (
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 	"testing"
 	"time"
+	"xp-task-dealer/core/models"
 )
 
-func TestSQLiteStore(t *testing.T) {
+func TestSQLiteStore_Tasks(t *testing.T) {
 	s := InitTestDB()
 
 	// Must have no tasks
@@ -15,7 +16,7 @@ func TestSQLiteStore(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Empty(t, tasks)
 
-	task := Task{
+	task := models.Task{
 		ID:          "task_id",
 		Name:        "task name",
 		Description: "task description",
@@ -45,7 +46,7 @@ func TestSQLiteStore(t *testing.T) {
 	// Must not return a invalid task
 	invalidTask, err := s.GetTaskById("invalid_id")
 	assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
-	assert.Equal(t, invalidTask, Task{})
+	assert.Equal(t, invalidTask, models.Task{})
 
 	// Must update a value
 	task.Name = "new_task_name"

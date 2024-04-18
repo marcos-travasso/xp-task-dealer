@@ -1,4 +1,4 @@
-package xp_task_dealer
+package core
 
 type TasksStorer interface {
 	SaveTask(task Task) error
