@@ -58,3 +58,52 @@ func TestSQLiteStore_Tasks(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, task.Name, updatedTask.Name)
 }
+
+func TestSQLiteStore_Developers(t *testing.T) {
+	s := InitTestDB()
+
+	// Must have no tasks
+	developers, err := s.GetDevelopers()
+	assert.NoError(t, err)
+	assert.Empty(t, developers)
+
+	developer := models.Developer{
+		ID:          "developer_id",
+		Name:        "developer name",
+		Description: "developer description",
+	}
+
+	// Must save a developer without error
+	err = s.SaveDeveloper(developer)
+	assert.NoError(t, err)
+
+	// Must return the saved developer
+	developers, err = s.GetDevelopers()
+	assert.NoError(t, err)
+	assert.Len(t, developers, 1)
+
+	savedDeveloper := developers[0]
+	assert.Equal(t, developer.ID, savedDeveloper.ID)
+	assert.Equal(t, developer.Name, savedDeveloper.Name)
+	assert.Equal(t, developer.Description, savedDeveloper.Description)
+
+	// Must return the developer by the ID
+	byIdDeveloper, err := s.GetDeveloperById(developer.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, developer.ID, byIdDeveloper.ID)
+
+	// Must not return a invalid developer
+	invalidDeveloper, err := s.GetDeveloperById("invalid_id")
+	assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
+	assert.Equal(t, invalidDeveloper, models.Developer{})
+
+	// Must update a value
+	developer.Name = "new_developer_name"
+	err = s.SaveDeveloper(developer)
+	assert.NoError(t, err)
+
+	// Must update the developer
+	updatedDeveloper, err := s.GetDeveloperById(developer.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, developer.Name, updatedDeveloper.Name)
+}
