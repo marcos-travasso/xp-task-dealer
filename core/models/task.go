@@ -7,7 +7,7 @@ import (
 
 type Task struct {
 	ID          string
-	Name        string
+	Title       string
 	Description string
 	Date        time.Time
 }
@@ -15,7 +15,7 @@ type Task struct {
 func NewTask(name, description string) Task {
 	return Task{
 		ID:          uuid.NewString(),
-		Name:        name,
+		Title:       name,
 		Description: description,
 		Date:        time.Now(),
 	}

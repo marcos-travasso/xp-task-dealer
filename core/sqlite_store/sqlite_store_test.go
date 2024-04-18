@@ -15,7 +15,7 @@ func TestSQLiteStore_Tasks(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Empty(t, tasks)
 
-	task := models.NewTask("test task name", "test task description")
+	task := models.NewTask("test task title", "test task description")
 
 	// Must save a task without error
 	err = s.SaveTask(task)
@@ -28,7 +28,7 @@ func TestSQLiteStore_Tasks(t *testing.T) {
 
 	savedTask := tasks[0]
 	assert.Equal(t, task.ID, savedTask.ID)
-	assert.Equal(t, task.Name, savedTask.Name)
+	assert.Equal(t, task.Title, savedTask.Title)
 	assert.Equal(t, task.Description, savedTask.Description)
 	assert.Equal(t, task.Date.Unix(), savedTask.Date.Unix())
 
@@ -43,14 +43,14 @@ func TestSQLiteStore_Tasks(t *testing.T) {
 	assert.Equal(t, invalidTask, models.Task{})
 
 	// Must update a value
-	task.Name = "new_task_name"
+	task.Title = "new_task_title"
 	err = s.SaveTask(task)
 	assert.NoError(t, err)
 
 	// Must update the task
 	updatedTask, err := s.GetTaskById(task.ID)
 	assert.NoError(t, err)
-	assert.Equal(t, task.Name, updatedTask.Name)
+	assert.Equal(t, task.Title, updatedTask.Title)
 }
 
 func TestSQLiteStore_Developers(t *testing.T) {

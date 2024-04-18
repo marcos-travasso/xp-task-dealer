@@ -43,7 +43,7 @@ func (o *OpenAIDealer) GetDeveloperForTask(task models.Task, developers []models
 					Content: "Responda qual o desenvolvedor mais indicado para desempenhar a tarefa enviada.\n" +
 						"A sua resposta deve ser um objeto JSON com um único campo \"nome\" contendo o nome do desenvolvedor escolhido.\n" +
 						"Os desenvolvedores disponíveis são:\n" + developersPrompt.String() +
-						"A tarefa é:\n" + task.Name + ": " + task.Description,
+						"A tarefa é:\n" + task.Title + ": " + task.Description,
 				},
 			},
 			ResponseFormat: &openai.ChatCompletionResponseFormat{
@@ -79,8 +79,8 @@ func (o *OpenAIDealer) GetTaskForDeveloper(developer models.Developer, tasks []m
 	tasksMap := make(map[string]models.Task)
 
 	for _, task := range tasks {
-		tasksPrompt.WriteString(fmt.Sprintf("Título: %s - Descrição: %s\n", task.Name, task.Description))
-		tasksMap[task.Name] = task
+		tasksPrompt.WriteString(fmt.Sprintf("Título: %s - Descrição: %s\n", task.Title, task.Description))
+		tasksMap[task.Title] = task
 	}
 
 	resp, err := o.client.CreateChatCompletion(
