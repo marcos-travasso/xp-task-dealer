@@ -11,7 +11,8 @@ import (
 	"xp-task-dealer/core/models"
 )
 
-var ErrDeveloperNotFound = errors.New("dealer could not get developer")
+var ErrDeveloperNotChosen = errors.New("dealer could not choose developer")
+var ErrTaskNotChosen = errors.New("dealer could not choose a task")
 
 type OpenAIDealer struct {
 	client *openai.Client
@@ -62,12 +63,12 @@ func (o *OpenAIDealer) GetDeveloperForTask(task models.Task, developers []models
 
 	devName, ok := response["nome"]
 	if !ok {
-		return models.Developer{}, ErrDeveloperNotFound
+		return models.Developer{}, ErrDeveloperNotChosen
 	}
 
 	dev, ok := developersMap[devName]
 	if !ok {
-		return models.Developer{}, ErrDeveloperNotFound
+		return models.Developer{}, ErrDeveloperNotChosen
 	}
 
 	return dev, nil
