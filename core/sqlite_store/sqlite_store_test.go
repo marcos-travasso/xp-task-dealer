@@ -4,7 +4,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 	"testing"
-	"time"
 	"xp-task-dealer/core/models"
 )
 
@@ -16,12 +15,7 @@ func TestSQLiteStore_Tasks(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Empty(t, tasks)
 
-	task := models.Task{
-		ID:          "task_id",
-		Name:        "task name",
-		Description: "task description",
-		Date:        time.Now(),
-	}
+	task := models.NewTask("test task name", "test task description")
 
 	// Must save a task without error
 	err = s.SaveTask(task)
@@ -67,11 +61,7 @@ func TestSQLiteStore_Developers(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Empty(t, developers)
 
-	developer := models.Developer{
-		ID:          "developer_id",
-		Name:        "developer name",
-		Description: "developer description",
-	}
+	developer := models.NewDeveloper("test developer name", "test developer description")
 
 	// Must save a developer without error
 	err = s.SaveDeveloper(developer)
