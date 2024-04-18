@@ -75,8 +75,53 @@ func (o *OpenAIDealer) GetDeveloperForTask(task models.Task, developers []models
 }
 
 func (o *OpenAIDealer) GetTaskForDeveloper(developer models.Developer, tasks []models.Task) (models.Task, error) {
-	//TODO implement me
-	panic("implement me")
+	var tasksPrompt strings.Builder
+	tasksMap := make(map[string]models.Task)
+
+	for _, task := range tasks {
+		tasksPrompt.WriteString(fmt.Sprintf("Título: %s - Descrição: %s\n", task.Name, task.Description))
+		tasksMap[task.Name] = task
+	}
+
+	resp, err := o.client.CreateChatCompletion(
+		context.Background(),
+		openai.ChatCompletionRequest{
+			Model: openai.GPT3Dot5Turbo,
+			Messages: []openai.ChatCompletionMessage{
+				{
+					Role: openai.ChatMessageRoleSystem,
+					Content: "Responda qual a tarefa mais indicada para o desenvolvedor em questão.\n" +
+						"A sua resposta deve ser um objeto JSON com um único campo \"title\" contendo o título da tarefa escolhida.\n" +
+						"As tarefas disponíveis são:\n" + tasksPrompt.String() +
+						"O desenvolvedor é:\n" + developer.Name + ": " + developer.Description,
+				},
+			},
+			ResponseFormat: &openai.ChatCompletionResponseFormat{
+				Type: openai.ChatCompletionResponseFormatTypeJSONObject,
+			},
+		},
+	)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	var response map[string]string
+	err = json.Unmarshal([]byte(resp.Choices[0].Message.Content), &response)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	taskName, ok := response["title"]
+	if !ok {
+		return models.Task{}, ErrTaskNotChosen
+	}
+
+	dev, ok := tasksMap[taskName]
+	if !ok {
+		return models.Task{}, ErrTaskNotChosen
+	}
+
+	return dev, nil
 }
 
 func (o *OpenAIDealer) GetPairForDeveloper(developer models.Developer, task models.Task, developers []models.Developer) ([]models.Developer, error) {

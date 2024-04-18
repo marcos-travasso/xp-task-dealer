@@ -20,3 +20,18 @@ func TestOpenAIDealer_GetDeveloperForTask(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, developer1.ID, chosenDev.ID)
 }
+
+func TestOpenAIDealer_GetTaskForDeveloper(t *testing.T) {
+	developer := models.NewDeveloper("Bob", "Bob é um desenvolvedor backend experiente em sistemas escaláveis, com habilidades em diversas linguagens e bancos de dados.")
+
+	task1 := models.NewTask("Enviar email de recuperação de senha", "Como um usuário, gostaria de receber um email contendo as instruções para recuperar a senha.")
+	task2 := models.NewTask("Desenvolver tela de login", "Como um usuário, gostaria de poder acessar a aplicação através de uma tela de login, onde possa inserir meu email e senha, para que eu possa ter acesso a plataforma.")
+
+	tasks := []models.Task{task1, task2}
+
+	d := Init()
+
+	chosenTask, err := d.GetTaskForDeveloper(developer, tasks)
+	assert.NoError(t, err)
+	assert.Equal(t, task1.ID, chosenTask.ID)
+}
