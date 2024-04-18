@@ -12,7 +12,7 @@ type SQLiteStore struct {
 	conn *gorm.DB
 }
 
-func InitDB(dbDir string) *SQLiteStore {
+func Init(dbDir string) *SQLiteStore {
 	db, err := gorm.Open(sqlite.Open(dbDir), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("error opening sqlite file: %s", err)
@@ -23,7 +23,7 @@ func InitDB(dbDir string) *SQLiteStore {
 	return &SQLiteStore{conn: db}
 }
 
-func InitTestDB() *SQLiteStore {
+func InitTest() *SQLiteStore {
 	os.Remove("./tasks_tests.db")
-	return InitDB("./tasks_tests.db")
+	return Init("./tasks_tests.db")
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func TestSQLiteStore_Tasks(t *testing.T) {
-	s := InitTestDB()
+	s := InitTest()
 
 	// Must have no tasks
 	tasks, err := s.GetTasks()
@@ -60,7 +60,7 @@ func TestSQLiteStore_Tasks(t *testing.T) {
 }
 
 func TestSQLiteStore_Developers(t *testing.T) {
-	s := InitTestDB()
+	s := InitTest()
 
 	// Must have no tasks
 	developers, err := s.GetDevelopers()
