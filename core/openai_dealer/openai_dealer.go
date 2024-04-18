@@ -28,7 +28,7 @@ func (o *OpenAIDealer) GetDeveloperForTask(task models.Task, developers []models
 	developersMap := make(map[string]models.Developer)
 
 	for _, dev := range developers {
-		developersPrompt.WriteString(fmt.Sprintf("Nome: %s - Descrição: %s", dev.Name, dev.Description))
+		developersPrompt.WriteString(fmt.Sprintf("Nome: %s - Descrição: %s\n", dev.Name, dev.Description))
 		developersMap[dev.Name] = dev
 	}
 
@@ -38,16 +38,11 @@ func (o *OpenAIDealer) GetDeveloperForTask(task models.Task, developers []models
 			Model: openai.GPT3Dot5Turbo,
 			Messages: []openai.ChatCompletionMessage{
 				{
-					Role:    openai.ChatMessageRoleSystem,
-					Content: "Responda qual o desenvolvedor mais indicado para desempenhar a tarefa enviada. A sua resposta deve ser um objeto JSON com um único campo \"nome\" contendo o nome do desenvolvedor escolhido.",
-				},
-				{
-					Role:    openai.ChatMessageRoleSystem,
-					Content: "Os desenvolvedores disponíveis são:\n" + developersPrompt.String(),
-				},
-				{
-					Role:    openai.ChatMessageRoleSystem,
-					Content: fmt.Sprintf("A tarefa é:\n%s: %s", task.Name, task.Description),
+					Role: openai.ChatMessageRoleSystem,
+					Content: "Responda qual o desenvolvedor mais indicado para desempenhar a tarefa enviada.\n" +
+						"A sua resposta deve ser um objeto JSON com um único campo \"nome\" contendo o nome do desenvolvedor escolhido.\n" +
+						"Os desenvolvedores disponíveis são:\n" + developersPrompt.String() +
+						"A tarefa é:\n" + task.Name + ": " + task.Description,
 				},
 			},
 			ResponseFormat: &openai.ChatCompletionResponseFormat{
