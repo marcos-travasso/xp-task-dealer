@@ -124,7 +124,57 @@ func (o *OpenAIDealer) GetTaskForDeveloper(developer models.Developer, tasks []m
 	return dev, nil
 }
 
-func (o *OpenAIDealer) GetPairForDeveloper(developer models.Developer, task models.Task, developers []models.Developer) ([]models.Developer, error) {
-	//TODO implement me
-	panic("implement me")
+func (o *OpenAIDealer) GetPairForDeveloper(mainDeveloper models.Developer, task models.Task, developers []models.Developer) (models.Developer, error) {
+	var developersPrompt strings.Builder
+	developersMap := make(map[string]models.Developer)
+
+	for _, dev := range developers {
+		if dev.ID == mainDeveloper.ID {
+			continue
+		}
+
+		developersPrompt.WriteString(fmt.Sprintf("Nome: %s - Descrição: %s\n", dev.Name, dev.Description))
+		developersMap[dev.Name] = dev
+	}
+
+	resp, err := o.client.CreateChatCompletion(
+		context.Background(),
+		openai.ChatCompletionRequest{
+			Model: openai.GPT3Dot5Turbo,
+			Messages: []openai.ChatCompletionMessage{
+				{
+					Role: openai.ChatMessageRoleSystem,
+					Content: "Responda qual o desenvolvedor mais indicado para realizar programação pareada com o desenvolvedor descrito para a tarefa especificada.\n" +
+						"A sua resposta deve ser um objeto JSON com um único campo \"nome\" contendo o nome do desenvolvedor escolhido.\n" +
+						"O desenvolvedor principal:\n" + mainDeveloper.Description +
+						"A tarefa é:\n" + task.Title + ": " + task.Description +
+						"Os desenvolvedores disponíveis são:\n" + developersPrompt.String(),
+				},
+			},
+			ResponseFormat: &openai.ChatCompletionResponseFormat{
+				Type: openai.ChatCompletionResponseFormatTypeJSONObject,
+			},
+		},
+	)
+	if err != nil {
+		return models.Developer{}, err
+	}
+
+	var response map[string]string
+	err = json.Unmarshal([]byte(resp.Choices[0].Message.Content), &response)
+	if err != nil {
+		return models.Developer{}, err
+	}
+
+	devName, ok := response["nome"]
+	if !ok {
+		return models.Developer{}, ErrDeveloperNotChosen
+	}
+
+	dev, ok := developersMap[devName]
+	if !ok {
+		return models.Developer{}, ErrDeveloperNotChosen
+	}
+
+	return dev, nil
 }
