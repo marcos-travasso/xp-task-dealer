@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/marcos-travasso/xp-task-dealer/core/models"
 	"github.com/sashabaranov/go-openai"
 	"os"
 	"strings"
-	"xp-task-dealer/core/models"
 )
 
 var ErrDeveloperNotChosen = errors.New("dealer could not choose developer")

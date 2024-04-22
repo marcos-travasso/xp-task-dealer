@@ -1,6 +1,6 @@
 package sqlite_store
 
-import "xp-task-dealer/core/models"
+import "github.com/marcos-travasso/xp-task-dealer/core/models"
 
 func (s *SQLiteStore) SaveDeveloper(developer models.Developer) error {
 	result := s.conn.Save(&developer)

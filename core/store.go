@@ -1,6 +1,6 @@
 package core
 
-import "xp-task-dealer/core/models"
+import "github.com/marcos-travasso/xp-task-dealer/core/models"
 
 type Storer interface {
 	SaveTask(task models.Task) error
