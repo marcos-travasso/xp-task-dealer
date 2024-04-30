@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/marcos-travasso/xp-task-dealer/core/models"
 	"github.com/sashabaranov/go-openai"
 	"os"
