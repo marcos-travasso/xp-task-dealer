@@ -1,11 +1,11 @@
 package sqlite_store
 
 import (
-	"github.com/marcos-travasso/xp-task-dealer/core/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
 	"os"
+	"xp-task-dealer/core/models"
 )
 
 type SQLiteStore struct {

@@ -1,10 +1,10 @@
 package sqlite_store
 
 import (
-	"github.com/marcos-travasso/xp-task-dealer/core/models"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 	"testing"
+	"xp-task-dealer/core/models"
 )
 
 func TestSQLiteStore_Tasks(t *testing.T) {

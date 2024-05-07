@@ -6,10 +6,10 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/marcos-travasso/xp-task-dealer/core/models"
 	"github.com/sashabaranov/go-openai"
 	"os"
 	"strings"
+	"xp-task-dealer/core/models"
 )
 
 var ErrDeveloperNotChosen = errors.New("dealer could not choose developer")

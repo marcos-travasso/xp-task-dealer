@@ -1,9 +1,9 @@
 package openai_dealer
 
 import (
-	"github.com/marcos-travasso/xp-task-dealer/core/models"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"xp-task-dealer/core/models"
 )
 
 func TestOpenAIDealer_GetDeveloperForTask(t *testing.T) {
