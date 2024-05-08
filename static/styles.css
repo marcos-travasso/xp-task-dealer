@@ -68,6 +68,11 @@ li:hover {
     border-radius: 5px;
 }
 
+.target:hover {
+    cursor: pointer;
+    background-color: #dadada;
+}
+
 .target h2 {
     margin-top: 0;
 }

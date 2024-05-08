@@ -12,8 +12,6 @@
     <h1>XP Task Dealer</h1>
     <div class="navbar">
         <a href="index.html">Home</a>
-        <a href="developers.html">Developers</a>
-        <a href="tasks.html">Tasks</a>
         <a href="insert.html">Insert new</a>
     </div>
     <br>
@@ -30,30 +28,57 @@
     function showSuggestions() {
         let selectOption = document.getElementById("selectOption").value;
         let suggestionsDiv = document.getElementById("suggestions");
-        let suggestionsHTML = "";
+        suggestionsDiv.innerHTML = ""
 
         if (selectOption === "developer") {
-            let developers = ["Developer 1", "Developer 2", "Developer 3"];
-            suggestionsHTML += "<ul>";
-            developers.forEach(function(developer) {
-                suggestionsHTML += "<li onclick='appendToSuggestions(\"" + developer + "\")'>" + developer + "</li>";
+            getDevelopers().then(devs => {
+                devs.forEach(dev => {
+                    suggestionsDiv.innerHTML += `<div class="target"><h2>${dev.name}</h2><p>${dev.description}</p></div>`;
+                })
             });
-            suggestionsHTML += "</ul>";
-        } else if (selectOption === "task") {
-            let tasks = ["Task 1", "Task 2", "Task 3"];
-            suggestionsHTML += "<ul>";
-            tasks.forEach(function(task) {
-                suggestionsHTML += "<li onclick='appendToSuggestions(\"" + task + "\")'>" + task + "</li>";
-            });
-            suggestionsHTML += "</ul>";
-        }
 
-        suggestionsDiv.innerHTML = suggestionsHTML;
+        } else if (selectOption === "task") {
+            getTasks().then(tasks => {
+                tasks.forEach(task => {
+                    console.info(task)
+                    suggestionsDiv.innerHTML += `<div class="target"><h2>${task.title}</h2><p>${task.description}</p></div>`;
+                })
+            });
+        }
     }
 
-    function appendToSuggestions(item) {
-        let suggestionsDiv = document.getElementById("suggestions");
-        suggestionsDiv.innerHTML += "<div>" + item + "</div>";
+    function getDevelopers() {
+        return fetch(window.location.origin + '/api/v1/developers')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error('There was a problem getting developers:', error);
+                return [];
+            });
+    }
+
+    function getTasks() {
+        return fetch(window.location.origin + '/api/v1/tasks')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error('There was a problem getting tasks:', error);
+                return [];
+            });
     }
 </script>
 
