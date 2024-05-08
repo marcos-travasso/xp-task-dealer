@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Assignment Suggestions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>XP Task Dealer</h1>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="developers.html">Developers</a>
+        <a href="tasks.html">Tasks</a>
+        <a href="insert.html">Insert new</a>
+    </div>
+    <br>
+    <h2><label for="selectOption">Select an Option:</label></h2>
+    <select id="selectOption" onchange="showSuggestions()">
+        <option disabled selected value="">Select an option</option>
+        <option value="developer">Developer</option>
+        <option value="task">Task</option>
+    </select>
+    <div class="suggestions" id="suggestions"></div>
+</div>
+
+<script>
+    function showSuggestions() {
+        let selectOption = document.getElementById("selectOption").value;
+        let suggestionsDiv = document.getElementById("suggestions");
+        let suggestionsHTML = "";
+
+        if (selectOption === "developer") {
+            let developers = ["Developer 1", "Developer 2", "Developer 3"];
+            suggestionsHTML += "<ul>";
+            developers.forEach(function(developer) {
+                suggestionsHTML += "<li onclick='appendToSuggestions(\"" + developer + "\")'>" + developer + "</li>";
+            });
+            suggestionsHTML += "</ul>";
+        } else if (selectOption === "task") {
+            let tasks = ["Task 1", "Task 2", "Task 3"];
+            suggestionsHTML += "<ul>";
+            tasks.forEach(function(task) {
+                suggestionsHTML += "<li onclick='appendToSuggestions(\"" + task + "\")'>" + task + "</li>";
+            });
+            suggestionsHTML += "</ul>";
+        }
+
+        suggestionsDiv.innerHTML = suggestionsHTML;
+    }
+
+    function appendToSuggestions(item) {
+        let suggestionsDiv = document.getElementById("suggestions");
+        suggestionsDiv.innerHTML += "<div>" + item + "</div>";
+    }
+</script>
+
+</body>
+</html>

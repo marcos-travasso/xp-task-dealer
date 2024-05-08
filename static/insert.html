@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert New Developer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Insert New Developer</h1>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="developers.html">Developers</a>
+        <a href="tasks.html">Tasks</a>
+        <a href="insert.html">Insert new</a>
+    </div>
+    <br>
+
+    <label for="selectOption">Type:</label>
+    <select id="selectOption" onchange="changeType()">
+        <option value="developer">Developer</option>
+        <option value="task">Task</option>
+    </select>
+
+    <form method="post">
+        <label for="name" id="nameLabel">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" required>
+
+        <input type="submit" id="button" value="Insert Developer">
+    </form>
+</div>
+
+
+<script>
+    function changeType() {
+        let selectOption = document.getElementById("selectOption").value;
+        let name = document.getElementById("nameLabel");
+        let button = document.getElementById("button");
+
+        if (selectOption === "developer") {
+            name.innerHTML = "Name:";
+            button.value = "Insert Developer";
+        } else if (selectOption === "task") {
+            name.innerHTML = "Task:";
+            button.value = "Insert Task";
+        }
+    }
+</script>
+
+</body>
+</html>
