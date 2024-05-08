@@ -24,6 +24,6 @@ func Init(dbDir string) *SQLiteStore {
 }
 
 func InitTest() *SQLiteStore {
-	os.Remove("./tasks_tests.db")
-	return Init("./tasks_tests.db")
+	os.Remove("./test.db")
+	return Init("./test.db")
 }

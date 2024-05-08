@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "xp-task-dealer",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
