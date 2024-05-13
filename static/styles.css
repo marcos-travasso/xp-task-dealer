@@ -112,3 +112,12 @@ label {
     display: block;
     margin-bottom: 5px;
 }
+
+.notification {
+    margin-top: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    display: none;
+}

@@ -22,7 +22,7 @@
         <option value="task">Task</option>
     </select>
 
-    <form method="post">
+    <form id="developerForm">
         <label for="name" id="nameLabel">Name:</label>
         <input type="text" id="name" name="name" required>
 
@@ -31,10 +31,13 @@
 
         <input type="submit" id="button" value="Insert Developer">
     </form>
+    <div id="notification" class="notification">Developer inserted successfully!</div>
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+    let currentType = "Developer";
+
     function changeType() {
         let selectOption = document.getElementById("selectOption").value;
         let name = document.getElementById("nameLabel");
@@ -43,11 +46,48 @@
         if (selectOption === "developer") {
             name.innerHTML = "Name:";
             button.value = "Insert Developer";
+            currentType = "Developer";
         } else if (selectOption === "task") {
             name.innerHTML = "Task:";
             button.value = "Insert Task";
+            currentType = "Task";
         }
     }
+</script>
+<script>
+    document.getElementById('developerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+
+        const jsonData = {};
+        formData.forEach((value, key) => {
+            jsonData[key] = value;
+        });
+
+        let url = "/api/v1/developers"
+        if (currentType === "Task") {
+            url = "/api/v1/tasks"
+            jsonData["title"] = jsonData["name"]
+            delete jsonData["name"]
+        }
+
+        axios.post(url, jsonData)
+            .then(response => {
+                const not = document.getElementById('notification')
+                not.style.display = 'block';
+                not.innerHTML = `${currentType} inserted successfully!`;
+
+                formData.forEach(
+                    (value, key) => {
+                        document.getElementById(key).value = '';
+                    }
+                )
+            })
+            .catch(error => {
+                console.error('Error inserting developer:', error);
+            });
+    });
 </script>
 
 </body>
