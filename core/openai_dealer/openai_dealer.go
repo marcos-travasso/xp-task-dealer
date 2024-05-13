@@ -7,6 +7,7 @@ import (
 	"fmt"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/sashabaranov/go-openai"
+	"log"
 	"os"
 	"strings"
 	"xp-task-dealer/core/models"
@@ -17,11 +18,13 @@ var ErrTaskNotChosen = errors.New("dealer could not choose a task")
 
 type OpenAIDealer struct {
 	client *openai.Client
+	cache  map[string]interface{}
 }
 
 func Init() *OpenAIDealer {
 	return &OpenAIDealer{
 		client: openai.NewClient(os.Getenv("OPENAI_KEY")),
+		cache:  make(map[string]interface{}),
 	}
 }
 
@@ -34,19 +37,26 @@ func (o *OpenAIDealer) GetDeveloperForTask(task models.Task, developers []models
 		developersMap[dev.Name] = dev
 	}
 
+	messages := []openai.ChatCompletionMessage{
+		{
+			Role: openai.ChatMessageRoleSystem,
+			Content: "Responda qual o desenvolvedor mais indicado para desempenhar a tarefa enviada.\n" +
+				"A sua resposta deve ser um objeto JSON com um único campo \"nome\" contendo o nome do desenvolvedor escolhido.\n" +
+				"Os desenvolvedores disponíveis são:\n" + developersPrompt.String() +
+				"A tarefa é:\n" + task.Title + ": " + task.Description,
+		},
+	}
+	cacheKey := generateHash(messages)
+	if cache, ok := o.cache[cacheKey]; ok {
+		log.Println("cache hit for key:", cacheKey)
+		return cache.(models.Developer), nil
+	}
+
 	resp, err := o.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model: openai.GPT3Dot5Turbo,
-			Messages: []openai.ChatCompletionMessage{
-				{
-					Role: openai.ChatMessageRoleSystem,
-					Content: "Responda qual o desenvolvedor mais indicado para desempenhar a tarefa enviada.\n" +
-						"A sua resposta deve ser um objeto JSON com um único campo \"nome\" contendo o nome do desenvolvedor escolhido.\n" +
-						"Os desenvolvedores disponíveis são:\n" + developersPrompt.String() +
-						"A tarefa é:\n" + task.Title + ": " + task.Description,
-				},
-			},
+			Model:    openai.GPT3Dot5Turbo,
+			Messages: messages,
 			ResponseFormat: &openai.ChatCompletionResponseFormat{
 				Type: openai.ChatCompletionResponseFormatTypeJSONObject,
 			},
@@ -72,6 +82,7 @@ func (o *OpenAIDealer) GetDeveloperForTask(task models.Task, developers []models
 		return models.Developer{}, ErrDeveloperNotChosen
 	}
 
+	o.cache[cacheKey] = dev
 	return dev, nil
 }
 
@@ -84,19 +95,27 @@ func (o *OpenAIDealer) GetTaskForDeveloper(developer models.Developer, tasks []m
 		tasksMap[task.Title] = task
 	}
 
+	messages := []openai.ChatCompletionMessage{
+		{
+			Role: openai.ChatMessageRoleSystem,
+			Content: "Responda qual a tarefa mais indicada para o desenvolvedor em questão.\n" +
+				"A sua resposta deve ser um objeto JSON com um único campo \"title\" contendo o título da tarefa escolhida.\n" +
+				"As tarefas disponíveis são:\n" + tasksPrompt.String() +
+				"O desenvolvedor é:\n" + developer.Name + ": " + developer.Description,
+		},
+	}
+
+	cacheKey := generateHash(messages)
+	if cache, ok := o.cache[cacheKey]; ok {
+		log.Println("cache hit for key:", cacheKey)
+		return cache.(models.Task), nil
+	}
+
 	resp, err := o.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model: openai.GPT3Dot5Turbo,
-			Messages: []openai.ChatCompletionMessage{
-				{
-					Role: openai.ChatMessageRoleSystem,
-					Content: "Responda qual a tarefa mais indicada para o desenvolvedor em questão.\n" +
-						"A sua resposta deve ser um objeto JSON com um único campo \"title\" contendo o título da tarefa escolhida.\n" +
-						"As tarefas disponíveis são:\n" + tasksPrompt.String() +
-						"O desenvolvedor é:\n" + developer.Name + ": " + developer.Description,
-				},
-			},
+			Model:    openai.GPT3Dot5Turbo,
+			Messages: messages,
 			ResponseFormat: &openai.ChatCompletionResponseFormat{
 				Type: openai.ChatCompletionResponseFormatTypeJSONObject,
 			},
@@ -117,12 +136,13 @@ func (o *OpenAIDealer) GetTaskForDeveloper(developer models.Developer, tasks []m
 		return models.Task{}, ErrTaskNotChosen
 	}
 
-	dev, ok := tasksMap[taskName]
+	task, ok := tasksMap[taskName]
 	if !ok {
 		return models.Task{}, ErrTaskNotChosen
 	}
 
-	return dev, nil
+	o.cache[cacheKey] = task
+	return task, nil
 }
 
 func (o *OpenAIDealer) GetPairForDeveloper(mainDeveloper models.Developer, task models.Task, developers []models.Developer) (models.Developer, error) {
@@ -138,20 +158,28 @@ func (o *OpenAIDealer) GetPairForDeveloper(mainDeveloper models.Developer, task 
 		developersMap[dev.Name] = dev
 	}
 
+	messages := []openai.ChatCompletionMessage{
+		{
+			Role: openai.ChatMessageRoleSystem,
+			Content: "Responda qual o desenvolvedor mais indicado para realizar programação pareada com o desenvolvedor descrito para a tarefa especificada.\n" +
+				"A sua resposta deve ser um objeto JSON com um único campo \"nome\" contendo o nome do desenvolvedor escolhido.\n" +
+				"O desenvolvedor principal:\n" + mainDeveloper.Description +
+				"A tarefa é:\n" + task.Title + ": " + task.Description +
+				"Os desenvolvedores disponíveis são:\n" + developersPrompt.String(),
+		},
+	}
+
+	cacheKey := generateHash(messages)
+	if cache, ok := o.cache[cacheKey]; ok {
+		log.Println("cache hit for key:", cacheKey)
+		return cache.(models.Developer), nil
+	}
+
 	resp, err := o.client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model: openai.GPT3Dot5Turbo,
-			Messages: []openai.ChatCompletionMessage{
-				{
-					Role: openai.ChatMessageRoleSystem,
-					Content: "Responda qual o desenvolvedor mais indicado para realizar programação pareada com o desenvolvedor descrito para a tarefa especificada.\n" +
-						"A sua resposta deve ser um objeto JSON com um único campo \"nome\" contendo o nome do desenvolvedor escolhido.\n" +
-						"O desenvolvedor principal:\n" + mainDeveloper.Description +
-						"A tarefa é:\n" + task.Title + ": " + task.Description +
-						"Os desenvolvedores disponíveis são:\n" + developersPrompt.String(),
-				},
-			},
+			Model:    openai.GPT3Dot5Turbo,
+			Messages: messages,
 			ResponseFormat: &openai.ChatCompletionResponseFormat{
 				Type: openai.ChatCompletionResponseFormatTypeJSONObject,
 			},
@@ -177,5 +205,6 @@ func (o *OpenAIDealer) GetPairForDeveloper(mainDeveloper models.Developer, task 
 		return models.Developer{}, ErrDeveloperNotChosen
 	}
 
+	o.cache[cacheKey] = dev
 	return dev, nil
 }
