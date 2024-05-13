@@ -96,16 +96,32 @@
         makingDiv.innerHTML = "";
         makingDiv.style.display = "block";
 
-        if (type === "developers") {
-            makingDiv.innerHTML += `<div class="selectedTarget"><h2>${target.name}</h2><p>${target.description}</p></div>`;
-        } else {
-            makingDiv.innerHTML += `<div class="selectedTarget"><h2>${target.title}</h2><p>${target.description}</p></div>`;
-        }
+        makingDiv.innerHTML += `<div class="selectedTarget"><h2>${target.name !== undefined ? target.name : target.title}</h2><p>${target.description}</p></div>`;
 
         const invertedType = type === "developers" ? "task" : "developer";
-        makingDiv.innerHTML += "<h2>Suggested " + invertedType + ":</h2>"
 
-        makingDiv.innerHTML += `<div class="target noHoverEffect"><h2>TASK SUGERIDA</h2><p>DESCRIÇÃO SUGERIDA</p></div>`;
+        getSuggestion(target, type).then(s => {
+            makingDiv.innerHTML += "<h2>Suggested " + invertedType + ":</h2>"
+            makingDiv.innerHTML += `<div class="target noHoverEffect"><h2>${s.name !== undefined ? s.name : s.title}</h2><p>${s.description}</p></div>`;
+        });
+    }
+
+    function getSuggestion(target, type) {
+        const route = type === "developers" ? "/api/v1/suggestions/developer/" : "/api/v1/suggestions/task/";
+        return fetch(window.location.origin + route + target.id)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error('There was a problem getting tasks:', error);
+                return [];
+            });
     }
 </script>
 
