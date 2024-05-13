@@ -43,9 +43,17 @@ select {
     border-radius: 5px;
     box-sizing: border-box;
 }
+
 .suggestions {
     margin-top: 20px;
+    display: none;
 }
+
+.makingSuggestion {
+    margin-top: 20px;
+    display: none;
+}
+
 ul {
     list-style-type: none;
     padding: 0;
@@ -61,6 +69,11 @@ li:hover {
     background-color: #e6e6e6;
 }
 
+.selectedTarget {
+    outline: #cc5454 solid 2px;
+}
+
+.selectedTarget,
 .target {
     margin-bottom: 20px;
     padding: 10px;
@@ -73,10 +86,16 @@ li:hover {
     background-color: #dadada;
 }
 
+.noHoverEffect {
+    pointer-events: none;
+}
+
+.selectedTarget h2,
 .target h2 {
     margin-top: 0;
 }
 
+.selectedTarget p,
 .target p {
     margin-bottom: 0;
 }

@@ -18,30 +18,36 @@
     <h2><label for="selectOption">Select an Option:</label></h2>
     <select id="selectOption" onchange="showSuggestions()">
         <option disabled selected value="">Select an option</option>
-        <option value="developer">Developer</option>
-        <option value="task">Task</option>
+        <option value="developers">Developer</option>
+        <option value="tasks">Task</option>
     </select>
     <div class="suggestions" id="suggestions"></div>
+    <div class="makingSuggestion" id="makingSuggestion"></div>
 </div>
 
 <script>
+    let options = {"developers": {}, "tasks": {}};
     function showSuggestions() {
         let selectOption = document.getElementById("selectOption").value;
         let suggestionsDiv = document.getElementById("suggestions");
-        suggestionsDiv.innerHTML = ""
 
-        if (selectOption === "developer") {
+        document.getElementById("makingSuggestion").style.display = "none";
+
+        suggestionsDiv.innerHTML = "";
+        suggestionsDiv.style.display = "block";
+
+        if (selectOption === "developers") {
             getDevelopers().then(devs => {
                 devs.forEach(dev => {
-                    suggestionsDiv.innerHTML += `<div class="target"><h2>${dev.name}</h2><p>${dev.description}</p></div>`;
+                    options["developers"][dev.id] = dev
+                    suggestionsDiv.innerHTML += `<div class="target" onclick="showOptions('${dev.id}', 'developers')"><h2>${dev.name}</h2><p>${dev.description}</p></div>`;
                 })
             });
-
-        } else if (selectOption === "task") {
+        } else if (selectOption === "tasks") {
             getTasks().then(tasks => {
                 tasks.forEach(task => {
-                    console.info(task)
-                    suggestionsDiv.innerHTML += `<div class="target"><h2>${task.title}</h2><p>${task.description}</p></div>`;
+                    options["tasks"][task.id] = task
+                    suggestionsDiv.innerHTML += `<div class="target" onclick="showOptions('${task.id}', 'tasks')"><h2>${task.title}</h2><p>${task.description}</p></div>`;
                 })
             });
         }
@@ -79,6 +85,27 @@
                 console.error('There was a problem getting tasks:', error);
                 return [];
             });
+    }
+
+    function showOptions(target_id, type) {
+        const target = options[type][target_id]
+
+        document.getElementById("suggestions").style.display = "none";
+
+        let makingDiv = document.getElementById("makingSuggestion");
+        makingDiv.innerHTML = "";
+        makingDiv.style.display = "block";
+
+        if (type === "developers") {
+            makingDiv.innerHTML += `<div class="selectedTarget"><h2>${target.name}</h2><p>${target.description}</p></div>`;
+        } else {
+            makingDiv.innerHTML += `<div class="selectedTarget"><h2>${target.title}</h2><p>${target.description}</p></div>`;
+        }
+
+        const invertedType = type === "developers" ? "task" : "developer";
+        makingDiv.innerHTML += "<h2>Suggested " + invertedType + ":</h2>"
+
+        makingDiv.innerHTML += `<div class="target noHoverEffect"><h2>TASK SUGERIDA</h2><p>DESCRIÇÃO SUGERIDA</p></div>`;
     }
 </script>
 
