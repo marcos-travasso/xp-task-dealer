@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"net/http"
+	"xp-task-dealer/core"
 	"xp-task-dealer/server/dto"
 )
 
@@ -17,7 +19,10 @@ func getDeveloperSuggestionHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
 	task, err := service.GetTaskForDeveloper(id)
-	if err != nil {
+	if errors.Is(err, core.ErrNoSuggestion) {
+		respondWithError(http.StatusNotFound, err, w)
+		return
+	} else if err != nil {
 		respondWithError(http.StatusInternalServerError, err, w)
 		return
 	}
@@ -29,7 +34,10 @@ func getTaskSuggestionHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
 	dev, err := service.GetDeveloperForTask(id)
-	if err != nil {
+	if errors.Is(err, core.ErrNoSuggestion) {
+		respondWithError(http.StatusNotFound, err, w)
+		return
+	} else if err != nil {
 		respondWithError(http.StatusInternalServerError, err, w)
 		return
 	}

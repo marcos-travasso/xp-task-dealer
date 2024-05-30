@@ -1,6 +1,11 @@
 package core
 
-import "xp-task-dealer/core/models"
+import (
+	"errors"
+	"xp-task-dealer/core/models"
+)
+
+var ErrNoSuggestion = errors.New("no suggestion found")
 
 type Service struct {
 	s Storer
@@ -37,6 +42,9 @@ func (s *Service) GetTaskForDeveloper(id string) (models.Task, error) {
 	}
 
 	filteredTasks := s.filterByDeveloper(dev)
+	if len(filteredTasks) == 0 {
+		return models.Task{}, ErrNoSuggestion
+	}
 
 	return s.d.GetTaskForDeveloper(dev, filteredTasks)
 }
@@ -53,6 +61,9 @@ func (s *Service) GetDeveloperForTask(id string) (models.Developer, error) {
 	}
 
 	filteredDevs := s.filterByTask(task)
+	if len(filteredDevs) == 0 {
+		return models.Developer{}, ErrNoSuggestion
+	}
 
 	return s.d.GetDeveloperForTask(task, filteredDevs)
 }
@@ -61,6 +72,10 @@ func (s *Service) GetPairForDeveloper(mainDeveloper models.Developer, task model
 	devs, err := s.s.GetDevelopers()
 	if err != nil {
 		return models.Developer{}, err
+	}
+
+	if len(devs) == 0 {
+		return models.Developer{}, ErrNoSuggestion
 	}
 
 	return s.d.GetPairForDeveloper(mainDeveloper, task, devs)

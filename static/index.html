@@ -101,6 +101,11 @@
         const invertedType = type === "developers" ? "task" : "developer";
 
         getSuggestion(target, type).then(s => {
+            if (s === null) {
+                makingDiv.innerHTML += "<h2>No suggested " + invertedType + " was found.</h2>"
+                return;
+            }
+
             makingDiv.innerHTML += "<h2>Suggested " + invertedType + ":</h2>"
             makingDiv.innerHTML += `<div class="target noHoverEffect"><h2>${s.name !== undefined ? s.name : s.title}</h2><p>${s.description}</p></div>`;
             makingDiv.innerHTML += `<button id="button" type="button" onclick="markAsSelected('${target.id}', '${s.id}', '${type}')">Accept suggestion</button>`
@@ -112,6 +117,9 @@
         const route = type === "developers" ? "/api/v1/suggestions/developer/" : "/api/v1/suggestions/task/";
         return fetch(window.location.origin + route + target.id)
             .then(response => {
+                if (response.status === 404) {
+                    return null;
+                }
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -122,7 +130,7 @@
             })
             .catch(error => {
                 console.error('There was a problem getting tasks:', error);
-                return [];
+                return null;
             });
     }
 
