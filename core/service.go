@@ -9,8 +9,8 @@ type Service struct {
 	devBlacklists  map[string]map[string]struct{}
 	taskBlacklists map[string]map[string]struct{}
 
-	selectedDevs  map[string]struct{}
-	selectedTasks map[string]struct{}
+	selectedDevs  map[string]string
+	selectedTasks map[string]string
 }
 
 func NewService(s Storer, d Dealer) *Service {
@@ -20,12 +20,17 @@ func NewService(s Storer, d Dealer) *Service {
 		devBlacklists:  make(map[string]map[string]struct{}),
 		taskBlacklists: make(map[string]map[string]struct{}),
 
-		selectedDevs:  make(map[string]struct{}),
-		selectedTasks: make(map[string]struct{}),
+		selectedDevs:  make(map[string]string),
+		selectedTasks: make(map[string]string),
 	}
 }
 
 func (s *Service) GetTaskForDeveloper(id string) (models.Task, error) {
+	task, exists := s.selectedDevs[id]
+	if exists {
+		return s.s.GetTaskById(task)
+	}
+
 	dev, err := s.s.GetDeveloperById(id)
 	if err != nil {
 		return models.Task{}, err
@@ -37,6 +42,11 @@ func (s *Service) GetTaskForDeveloper(id string) (models.Task, error) {
 }
 
 func (s *Service) GetDeveloperForTask(id string) (models.Developer, error) {
+	dev, exists := s.selectedTasks[id]
+	if exists {
+		return s.s.GetDeveloperById(dev)
+	}
+
 	task, err := s.s.GetTaskById(id)
 	if err != nil {
 		return models.Developer{}, err
@@ -112,8 +122,8 @@ func (s *Service) AddBlacklist(devId, taskId string) error {
 }
 
 func (s *Service) AddSelected(devId, taskId string) error {
-	s.selectedDevs[devId] = struct{}{}
-	s.selectedTasks[taskId] = struct{}{}
+	s.selectedDevs[devId] = taskId
+	s.selectedTasks[taskId] = devId
 
 	return nil
 }
