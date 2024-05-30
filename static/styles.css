@@ -110,6 +110,7 @@ textarea {
     box-sizing: border-box;
 }
 
+button,
 input[type="submit"] {
     background-color: #333;
     color: #fff;
@@ -117,8 +118,10 @@ input[type="submit"] {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-right: 10px;
 }
 
+button:hover,
 input[type="submit"]:hover {
     background-color: #555;
 }
