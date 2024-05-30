@@ -10,6 +10,7 @@ import (
 
 var dbStore core.Storer
 var dealer core.Dealer
+var service *core.Service
 
 func main() {
 	fs := http.FileServer(http.Dir("../static"))
@@ -17,6 +18,7 @@ func main() {
 
 	dbStore = sqlite_store.Init("./xp-task-dealer.db")
 	dealer = openai_dealer.Init()
+	service = core.NewService(dbStore, dealer)
 
 	setupDevelopersRoutes()
 	setupTasksRoutes()
