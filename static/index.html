@@ -103,6 +103,8 @@
         getSuggestion(target, type).then(s => {
             makingDiv.innerHTML += "<h2>Suggested " + invertedType + ":</h2>"
             makingDiv.innerHTML += `<div class="target noHoverEffect"><h2>${s.name !== undefined ? s.name : s.title}</h2><p>${s.description}</p></div>`;
+            makingDiv.innerHTML += `<button id="button" type="button" onclick="markAsSelected('${target.id}', '${s.id}', '${type}')">Accept suggestion</button>`
+            makingDiv.innerHTML += `<button id="button" type="button" onclick="markAsBlacklist('${target.id}', '${s.id}', '${type}')">Decline suggestion</button>`
         });
     }
 
@@ -121,6 +123,38 @@
             .catch(error => {
                 console.error('There was a problem getting tasks:', error);
                 return [];
+            });
+    }
+
+    function markAsSelected(id1, id2, type) {
+        const task_id = type === "tasks" ? id1 : id2
+        const dev_id = type === "developers" ? id1 : id2
+
+        const url = window.location.origin + `/api/v1/suggestions/selected?task_id=${task_id}&dev_id=${dev_id}`;
+
+        fetch(url, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    function markAsBlacklist(id1, id2, type) {
+        const task_id = type === "tasks" ? id1 : id2
+        const dev_id = type === "developers" ? id1 : id2
+
+        const url = window.location.origin + `/api/v1/suggestions/blacklist?task_id=${task_id}&dev_id=${dev_id}`;
+
+        fetch(url, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
             });
     }
 </script>
