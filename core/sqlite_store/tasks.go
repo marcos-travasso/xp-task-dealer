@@ -25,3 +25,8 @@ func (s *SQLiteStore) GetTaskById(id string) (models.Task, error) {
 
 	return task, err
 }
+
+func (s *SQLiteStore) DeleteTask(id string) error {
+	result := s.conn.Delete(&models.Task{}, "id = ?", id)
+	return result.Error
+}

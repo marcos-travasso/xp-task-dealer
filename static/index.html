@@ -40,14 +40,14 @@
             getDevelopers().then(devs => {
                 devs.forEach(dev => {
                     options["developers"][dev.id] = dev
-                    suggestionsDiv.innerHTML += `<div class="target" onclick="showOptions('${dev.id}', 'developers')"><h2>${dev.name}</h2><p>${dev.description}</p></div>`;
+                    suggestionsDiv.innerHTML += `<div class="target" onclick="showOptions('${dev.id}', 'developers')"><h2>${dev.name}</h2><p>${dev.description}</p><button class="delete-button" onclick="deleteItem('${dev.id}')">X</button></div>`;
                 })
             });
         } else if (selectOption === "tasks") {
             getTasks().then(tasks => {
                 tasks.forEach(task => {
                     options["tasks"][task.id] = task
-                    suggestionsDiv.innerHTML += `<div class="target" onclick="showOptions('${task.id}', 'tasks')"><h2>${task.title}</h2><p>${task.description}</p></div>`;
+                    suggestionsDiv.innerHTML += `<div class="target" onclick="showOptions('${task.id}', 'tasks')"><h2>${task.title}</h2><p>${task.description}</p><button class="delete-button" onclick="deleteItem('${task.id}')">X</button></div>`;
                 })
             });
         }
@@ -84,6 +84,21 @@
             .catch(error => {
                 console.error('There was a problem getting tasks:', error);
                 return [];
+            });
+    }
+
+    function deleteItem(id) {
+        fetch(window.location.origin + '/api/v1/items/' + id, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                showSuggestions();
+            })
+            .catch(error => {
+                console.error('There was a problem deleting item:', error);
             });
     }
 

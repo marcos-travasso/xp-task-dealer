@@ -6,8 +6,10 @@ type Storer interface {
 	SaveTask(task models.Task) error
 	GetTasks() ([]models.Task, error)
 	GetTaskById(id string) (models.Task, error)
+	DeleteTask(id string) error
 
 	SaveDeveloper(developer models.Developer) error
 	GetDevelopers() ([]models.Developer, error)
 	GetDeveloperById(id string) (models.Developer, error)
+	DeleteDeveloper(id string) error
 }

@@ -27,3 +27,8 @@ func (s *SQLiteStore) GetDeveloperById(id string) (models.Developer, error) {
 
 	return developer, err
 }
+
+func (s *SQLiteStore) DeleteDeveloper(id string) error {
+	result := s.conn.Delete(&models.Developer{}, "id = ?", id)
+	return result.Error
+}

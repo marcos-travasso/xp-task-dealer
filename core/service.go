@@ -184,3 +184,10 @@ func (s *Service) filterByTask(task models.Task) []models.Developer {
 
 	return filteredDevs
 }
+
+func (s *Service) DeleteItem(id string) error {
+	s.s.DeleteTask(id)
+	s.s.DeleteDeveloper(id)
+
+	return nil
+}

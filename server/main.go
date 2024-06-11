@@ -23,6 +23,7 @@ func main() {
 	setupDevelopersRoutes()
 	setupTasksRoutes()
 	setupSuggestionsRoutes()
+	http.HandleFunc("DELETE /api/v1/items/{id}", deleteHandler)
 
 	log.Println("Server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
