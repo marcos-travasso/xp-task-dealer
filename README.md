@@ -1,11 +1,28 @@
-# Como iniciar o serviço
+# xp task dealer
+
+## O que é
+
+O projeto propõe um distribuidor de tarefas para facilitar a escolha de User Stories na metodologia de Programação Extrema (XP). 
+
+Utilizando Grandes Modelos de Linguagem (LLM), o projeto sugere tarefas alinhadas com as habilidades e histórico dos desenvolvedores.
+Isso promove a diversidade de habilidades e evita acomodações, seguindo os princípios ágeis de valorizar indivíduos e encorajar experimentações para melhorar os processos de desenvolvimento de software.
+
+### Como funciona
+
+1. As tarefas são adicionadas com uma descrição dos seus requisitos
+2. Os desenvolvedores são adicionados com uma descrição das suas habilidades, histórico de tarefas, e qualquer informação que possa ser útil para descrever a pessoa
+3. É possível acessar a página inicial da aplicação para escolher entre tarefas ou desenvolvedores, e solicitar uma sugestão
+4. Após analisar a sugestão, é possível aceitar a sugestão para que aquele desenvolvedor não seja mais sugerido em outras tarefas, assim como a tarefa não aparecer para outros desenvolvedores
+5. Também é possível recusar uma sugestão para que a aplicação faça uma nova sugestão evitando a anterior
+
+## Como iniciar o serviço
 
 1. [Instale o Docker](https://docs.docker.com/engine/install/)
 2. Gere uma chave secreta na OpenAI e coloque em um arquivo `.env` no diretório raíz do projeto com a chave `OPENAI_KEY`
 3. Rode o comando `docker-compose up`
 4. Visite o link https://localhost:8080/
 
-# Organização do projeto
+## Organização do projeto
 
 ```
 ├── api_collections
